@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="layout">
+        <div class="subcontainer" id="todoChanger">
+          <h2>To do</h2>
+          <div id="todoDiv" class="todo-container"></div>
+          <div id="todoButton" class="addButton">
+            <img src="add.svg" alt="" />
+            <h3>Add card</h3>
+          </div>
+        </div>
+        <div class="subcontainer" id="inProgressChanger">
+          <h2>In Progress</h2>
+          <div id="inProgressDiv" class="todo-container"></div>
+          <div id="inProgressButton" class="addButton">
+            <img src="add.svg" alt="" />
+            <h3>Add card</h3>
+          </div>
+        </div>
+        <div class="subcontainer" id="stuckChanger">
+          <h2>Stuck</h2>
+          <div id="stuckDiv" class="todo-container"></div>
+          <div id="stuckButton" class="addButton">
+            <img src="add.svg" alt="" />
+            <h3>Add card</h3>
+          </div>
+        </div>
+        <div class="subcontainer" id="doneChanger">
+          <h2>Done</h2>
+          <div id="doneDiv" class="todo-container"></div>
+          <div id="doneButton" class="addButton">
+            <img src="add.svg" alt="" />
+            <h3>Add card</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="AddTask" class="AddTask">
+      <div class="formContainer">
+        <h1>Add Task</h1>
+        <form class="form">
+          <label for="title">Title</label>
+          <input type="text" required name="title" id="title" />
+          <label for="description">Description</label>
+          <textarea
+            name="message"
+            required
+            rows="4"
+            id="description"
+            cols="50"
+          ></textarea>
+          <label for="status">Status</label>
+          <select name="status" required id="status">
+            <option value="todoOption">To do</option>
+            <option value="inprogressOption">In progress</option>
+            <option value="stuckOption">Stuck</option>
+            <option value="doneOption">Done</option>
+          </select>
+          <label for="priority">Priority</label>
+          <select name="priority" required id="priority">
+            <option value="High">High</option>
+            <option value="Mid">Medium</option>
+            <option value="Low">Low</option>
+          </select>
+          <button id="addTaskButton">Submit</button>
+        </form>
+      </div>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>
