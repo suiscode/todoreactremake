@@ -63,7 +63,9 @@ let todoArray = [];
 let editingTaskId = null;
 let style = "";
 
-todoArray = JSON.parse(localStorage.getItem("ARRAY"));
+
+
+todoArray = JSON.parse(localStorage.getItem("ARRAY")) == null ? [] : JSON.parse(localStorage.getItem("ARRAY"))
 
 const render = (renderTarget, item) => {
   if (item.stat === "doneOption") {
@@ -71,7 +73,7 @@ const render = (renderTarget, item) => {
   }
   return (
     renderTarget +
-    `<div class="containerOfTodo" draggable="true" id="task_${item.id}" ondragstart="dragStart(event)">
+    `<div class="containerOfTodo" draggable="true" id=${item.id}>
    <div class="checkcontainer">
    <h1 class="checksvg ${style}" onclick="setToDone(${item.id})"> ✓ </h1>
    <div class="infobox">
@@ -115,6 +117,7 @@ const addToRender = () => {
 addToRender();
 
 let count = 1;
+count = parseInt(localStorage.getItem("COUNT"))
 
 //Form submit
 addTaskButton.addEventListener("click", (e) => {
@@ -143,6 +146,7 @@ addTaskButton.addEventListener("click", (e) => {
         id: count,
       });
       count++;
+      localStorage.setItem("COUNT", count);
     }
     localStorage.setItem("ARRAY", JSON.stringify(todoArray));
     console.log(todoArray);
@@ -157,6 +161,8 @@ addTaskButton.addEventListener("click", (e) => {
 
 function deleteTask(taskId) {
   todoArray = todoArray.filter((task) => task.id !== taskId);
+  localStorage.setItem("ARRAY", JSON.stringify(todoArray));
+  
   addToRender();
 }
 
@@ -183,9 +189,47 @@ const setToDone = (id) => {
     ...todoArray[editedTaskIndex],
     stat: "doneOption",
   };
+  localStorage.setItem("ARRAY", JSON.stringify(todoArray));
   addToRender();
 
 };
 
 // DRAG AND DROP
 
+const containerOfTodo = document.querySelectorAll(".containerOfTodo");
+containerOfTodo.forEach((task) => {
+  task.addEventListener("dragstart", (e) => {
+    console.log("Drag Start - taskId:", task.id);
+    e.dataTransfer.setData("text/plain", task.id);
+  });
+});
+
+const subcontainers = document.querySelectorAll(".subcontainer");
+subcontainers.forEach((container) => {
+  container.addEventListener("dragover", (e) => {
+    e.preventDefault(); // This is necessary to allow a drop
+  });
+
+  container.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("text/plain");
+    console.log('taskId:', taskId); // log taskId
+    const task = todoArray.find((task) => task.id === parseInt(taskId));
+    console.log('task:', task); // log task
+    if (task) { // check if task is not undefined
+      if (container.id === "todoChanger") {
+        task.stat = "todoOption";
+      } else if (container.id === "inProgressChanger") {
+        task.stat = "inprogressOption";
+      } else if (container.id === "stuckChanger") {
+        task.stat = "stuckOption";
+      } else if (container.id === "doneChanger") {
+        task.stat = "doneOption";
+      }
+      localStorage.setItem("ARRAY", JSON.stringify(todoArray));
+      addToRender();
+    } else {
+      console.log('No task found with id:', taskId); // log if no task found
+    }
+  });
+});
