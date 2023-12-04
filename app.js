@@ -57,15 +57,26 @@ const escapeScreen = (e) => {
 
 document.onkeydown = escapeScreen;
 
+const addEvent = () => {
+  const containerOfTodo = document.querySelectorAll(".containerOfTodo");
+  containerOfTodo.forEach((task) => {
+    task.addEventListener("dragstart", (e) => {
+      console.log("Drag Start - taskId:", task.id);
+      e.dataTransfer.setData("text/plain", task.id);
+    });
+  });
+};
+
 // Todo Arrays
 
 let todoArray = [];
 let editingTaskId = null;
 let style = "";
 
-
-
-todoArray = JSON.parse(localStorage.getItem("ARRAY")) == null ? [] : JSON.parse(localStorage.getItem("ARRAY"))
+todoArray =
+  JSON.parse(localStorage.getItem("ARRAY")) == null
+    ? []
+    : JSON.parse(localStorage.getItem("ARRAY"));
 
 const render = (renderTarget, item) => {
   if (item.stat === "doneOption") {
@@ -95,6 +106,10 @@ const addToRender = () => {
   let inprogressrender = "";
   let stuckrender = "";
   let donerender = "";
+  todoArray.sort((a,b)=> {
+    const priorityOrder = {High: 3, Medium:2, Low:1};
+    return priorityOrder[b.priority] - priorityOrder[a.priority]
+  })
 
   todoArray.forEach((item) => {
     if (item.stat == "todoOption") {
@@ -113,11 +128,17 @@ const addToRender = () => {
   inProgressDiv.innerHTML = inprogressrender;
   stuckDiv.innerHTML = stuckrender;
   doneDiv.innerHTML = donerender;
+  addEvent();
 };
 addToRender();
 
 let count = 1;
-count = parseInt(localStorage.getItem("COUNT"))
+console.log(localStorage.getItem("COUNT"), 'count from local');
+count =
+  localStorage.getItem("COUNT") == null
+    ? 1
+    : parseInt(localStorage.getItem("COUNT"));
+console.log(count, 'after fetching');
 
 //Form submit
 addTaskButton.addEventListener("click", (e) => {
@@ -146,10 +167,9 @@ addTaskButton.addEventListener("click", (e) => {
         id: count,
       });
       count++;
-      localStorage.setItem("COUNT", count);
+      localStorage.setItem("COUNT", parseInt(count));
     }
     localStorage.setItem("ARRAY", JSON.stringify(todoArray));
-    console.log(todoArray);
     AddTask.classList.remove("show");
     title.value = "";
     description.value = "";
@@ -162,7 +182,7 @@ addTaskButton.addEventListener("click", (e) => {
 function deleteTask(taskId) {
   todoArray = todoArray.filter((task) => task.id !== taskId);
   localStorage.setItem("ARRAY", JSON.stringify(todoArray));
-  
+
   addToRender();
 }
 
@@ -191,32 +211,24 @@ const setToDone = (id) => {
   };
   localStorage.setItem("ARRAY", JSON.stringify(todoArray));
   addToRender();
-
 };
 
 // DRAG AND DROP
 
-const containerOfTodo = document.querySelectorAll(".containerOfTodo");
-containerOfTodo.forEach((task) => {
-  task.addEventListener("dragstart", (e) => {
-    console.log("Drag Start - taskId:", task.id);
-    e.dataTransfer.setData("text/plain", task.id);
-  });
-});
+addEvent();
 
 const subcontainers = document.querySelectorAll(".subcontainer");
 subcontainers.forEach((container) => {
   container.addEventListener("dragover", (e) => {
-    e.preventDefault(); // This is necessary to allow a drop
+    e.preventDefault();
   });
 
   container.addEventListener("drop", (e) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("text/plain");
-    console.log('taskId:', taskId); // log taskId
     const task = todoArray.find((task) => task.id === parseInt(taskId));
-    console.log('task:', task); // log task
-    if (task) { // check if task is not undefined
+    if (task) {
+      // check if task is not undefined
       if (container.id === "todoChanger") {
         task.stat = "todoOption";
       } else if (container.id === "inProgressChanger") {
@@ -228,8 +240,6 @@ subcontainers.forEach((container) => {
       }
       localStorage.setItem("ARRAY", JSON.stringify(todoArray));
       addToRender();
-    } else {
-      console.log('No task found with id:', taskId); // log if no task found
     }
   });
 });
