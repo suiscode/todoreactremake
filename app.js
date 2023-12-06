@@ -26,6 +26,7 @@ const todoDiv = document.getElementById("todoDiv");
 const inProgressDiv = document.getElementById("inProgressDiv");
 const stuckDiv = document.getElementById("stuckDiv");
 const doneDiv = document.getElementById("doneDiv");
+const subcontainers = document.querySelectorAll(".subcontainer");
 
 // Add card OnClick
 
@@ -101,15 +102,36 @@ const render = (renderTarget, item) => {
   );
 };
 
+const taskCountUpdate = () => {
+  const countTodo = document.getElementById("countTodo");
+  const countProg = document.getElementById("countProg");
+  const countStuck = document.getElementById("countStuck");
+  const countDone = document.getElementById("countDone");
+
+  const divcontainers = document.querySelectorAll(".todo-container");
+
+  divcontainers.forEach((item, index) => {
+    if (index == 0) {
+      countTodo.innerHTML = item.children.length;
+    } else if (index == 1) {
+      countProg.innerHTML = item.children.length;
+    } else if (index == 2) {
+      countStuck.innerHTML = item.children.length;
+    } else {
+      countDone.innerHTML = item.children.length;
+    }
+  });
+};
+
 const addToRender = () => {
   let todorender = "";
   let inprogressrender = "";
   let stuckrender = "";
   let donerender = "";
-  todoArray.sort((a,b)=> {
-    const priorityOrder = {High: 3, Medium:2, Low:1};
-    return priorityOrder[b.priority] - priorityOrder[a.priority]
-  })
+  todoArray.sort((a, b) => {
+    const priorityOrder = { High: 3, Medium: 2, Low: 1 };
+    return priorityOrder[b.priority] - priorityOrder[a.priority];
+  });
 
   todoArray.forEach((item) => {
     if (item.stat == "todoOption") {
@@ -133,12 +155,10 @@ const addToRender = () => {
 addToRender();
 
 let count = 1;
-console.log(localStorage.getItem("COUNT"), 'count from local');
 count =
   localStorage.getItem("COUNT") == null
     ? 1
     : parseInt(localStorage.getItem("COUNT"));
-console.log(count, 'after fetching');
 
 //Form submit
 addTaskButton.addEventListener("click", (e) => {
@@ -174,6 +194,7 @@ addTaskButton.addEventListener("click", (e) => {
     title.value = "";
     description.value = "";
     addToRender();
+    taskCountUpdate()
   }
 });
 
@@ -184,6 +205,7 @@ function deleteTask(taskId) {
   localStorage.setItem("ARRAY", JSON.stringify(todoArray));
 
   addToRender();
+  taskCountUpdate()
 }
 
 // EDIT TASK
@@ -199,6 +221,7 @@ function editTask(taskId) {
   editingTaskId = taskId;
 
   AddTask.classList.add("show");
+  taskCountUpdate()
 }
 
 // SET TO DONE
@@ -211,13 +234,15 @@ const setToDone = (id) => {
   };
   localStorage.setItem("ARRAY", JSON.stringify(todoArray));
   addToRender();
+  taskCountUpdate()
+
+  
 };
 
 // DRAG AND DROP
 
 addEvent();
 
-const subcontainers = document.querySelectorAll(".subcontainer");
 subcontainers.forEach((container) => {
   container.addEventListener("dragover", (e) => {
     e.preventDefault();
@@ -240,6 +265,11 @@ subcontainers.forEach((container) => {
       }
       localStorage.setItem("ARRAY", JSON.stringify(todoArray));
       addToRender();
+    taskCountUpdate()
+
     }
   });
 });
+
+taskCountUpdate();
+////////////////////////// END  OF TODO //////////////////////
